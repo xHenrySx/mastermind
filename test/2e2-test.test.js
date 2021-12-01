@@ -7,14 +7,31 @@ const app = require('../app').app
 
 
 describe('Suite de test',() => {
-    it('should return hello world', (done) => {
+    it('should return 401 when the token is invalid', (done) => {
+        // cuando la llamada no tiene correctamente la llave
         chai.request(app)
-            .get('/')
+            .get('/team')
             .end((err, res) => {
-                console.log('A');
-                chai.assert.equal(res.text, 'Hello world');
+                chai.assert.equal(res.statusCode, 401);
                 done();
-            });
-        console.log('B');
+            })
+            
+        it('should return 200 if token is valid', (done) => {
+            // para el login del usuario
+            chai.request(app)
+                .post('/login')
+                .end((err, res) => {
+                    chai.request(app)
+                        .get('/team')
+                        .set("Authorization",`JWT ${res.body.token}` )
+                        .end((err, res) => {
+                            chai.assert.equal(res.statusCode, 200);
+                            done();
+                        })
+                })
+        });
+        /*it('should return 401', (done) => {
+        // cuando la llamada no tiene correctamente la llave
+    });*/
     });
 });

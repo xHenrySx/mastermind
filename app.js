@@ -21,7 +21,8 @@ app.delete('/team/pokemons/:pokeid', () =>{
 
 //consultar nuestro equipo de pokemons
 app.get('/team', () => {
-
+    res.send('Hello world');
+    
 })
 
 //cambiar el orden de nuestros pokemons
