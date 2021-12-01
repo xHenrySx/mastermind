@@ -1,4 +1,3 @@
-const {log} = require('console');
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -22,7 +21,6 @@ app.delete('/team/pokemons/:pokeid', () =>{
 //consultar nuestro equipo de pokemons
 app.get('/team', () => {
     res.send('Hello world');
-    
 })
 
 //cambiar el orden de nuestros pokemons
