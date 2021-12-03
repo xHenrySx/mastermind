@@ -1,12 +1,22 @@
 const express = require('express');
+const passport = require('passport');
+
+require('./auten')(passport);
 const app = express();
 const port = 3000;
+
+app.post('/login', (req, res) => {
+    res.status(200).json(
+        {token: 'token test'}
+    )
+});
 
 app.get('/', (req, res) =>{
     // req: request => peticion 
     // res: response => respuesta 
     res.send('Hello world');
 })
+
 
 //agregar nuevos pokemones a la lista
 app.post('/team/pokemons', () => {
@@ -19,8 +29,9 @@ app.delete('/team/pokemons/:pokeid', () =>{
 })
 
 //consultar nuestro equipo de pokemons
-app.get('/team', () => {
-    res.send('Hello world');
+app.get('/team',passport.authenticate('jwt', {session: false}),
+    (req, res) => {
+        res.send('Hello world');
 })
 
 //cambiar el orden de nuestros pokemons
