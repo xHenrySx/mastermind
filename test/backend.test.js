@@ -5,16 +5,6 @@ chai.use(chaiHttp);
 const app = require('../app').app;
 
 describe('Test de aplicacion backend', ()=> {
-    it('should return 401 when the token is invalid', (done) => {
-        // cuando el token es ivalido
-        chai.request(app)
-            .get('/team')
-            .end((err, res) => {
-                chai.expect(res.statusCode).equal(401, 'clave invalida');
-                // podria ser tambie chai.assert.equal(res.statusCode, 401, 'clave invalida')
-                done();
-            });
-    });
 
     it('should return 200 when the token is valid', (done) => {
         // cuando el token es valido
@@ -23,7 +13,7 @@ describe('Test de aplicacion backend', ()=> {
             .end((err, res) => {
                 chai.request(app)
                     .get('/team')
-                    .set('Autorizacion', `JWT ${res.body.token}`)
+                    .set('Authorization', `JWT ${res.body.token}`)
                     .end((err, res) => {
                         chai.assert.equal(res.statusCode, 200, 'Token valido');
                         done();

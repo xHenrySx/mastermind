@@ -6,12 +6,12 @@ const JwtStrategy = require('passport-jwt').Strategy, /* etrategia de la clave d
 module.exports = passport => {
     // crear una constante que recibe los parametros de los header (las contrasenas pues)
     const opts = {
-        jwtRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"), /* para extraer los datos del header*/
-        secretKey: 'password' // TODO, guardar la contrasena en una variable de entorno
+        jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("JWT"), /* para extraer los datos del header*/
+        secretOrKey: 'algo' // TODO, guardar la contrasena en una variable de entorno
     }
     //usar las instancia de passport 
     passport.use(new JwtStrategy(opts, (decoded, done) => { /* como llamar a passport*/
         console.log('JWT decodificado', decoded);
-        return done(null, false);
+        return done(null, decoded);
     }));
 };
