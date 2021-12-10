@@ -1,17 +1,28 @@
 const express = require('express');
+const bodyParser = require('body-parser')
+const jwt = require('jsonwebtoken')
 const passport = require('passport');
+const userControllers = require('./controllers/database')
 
 require('./autentication')(passport);
 const app = express();
 const port = 3000;
 
+app.use(bodyParser.json())
 app.use(passport.initialize());
 
+// metodo para iniciar sesion en la api
 app.post('/login', (req, res) => {
-    res.status(200).json(
-        {token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.XnCjUwbv9Xqy8t7w0Y-1zmJ3pEdzteYXPIyoLZKNl8o'}
-    )
+    // comprobar las credenciales
+    userControllers.checkUserCredentials(req.body.user, req.body.password, (err, result) =>{
+        if (!result){
+            res.status(401).json({message: "Ivalid credentials"});
+        }
+        const token = jwt.sign({userId: req.body.user})
+        res.status(200).json({ token: token });
+    })
 });
+
 
 //agregar nuevos pokemones a la lista
 app.post('/team/pokemons', () => {

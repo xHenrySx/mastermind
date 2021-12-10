@@ -1,9 +1,7 @@
 const uuid = require('uuid');
-const crypto = require('./crypto.js');
+const crypto = require('../crypto.js');
 
-const userDataBase = {
-
-};
+const userDataBase = {};
 
 function registerUser(userName, password){
     // guardar nuevo usuario en la base de datos

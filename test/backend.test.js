@@ -10,6 +10,7 @@ describe('Test de aplicacion backend', ()=> {
         // cuando el token es valido
         chai.request(app)
             .post('/login')
+            .send({user: 'Manolo', password: '12345'})
             .end((err, res) => {
                 chai.request(app)
                     .get('/team')
