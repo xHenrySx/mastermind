@@ -1,58 +1,42 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
+const chai = require('chai')
+const chaihttp = require('chai-http')
+chai.use(chaihttp)
 
-chai.use(chaiHttp);
+const app = require('../app.js').app
 
-const app = require('../app').app;
+describe('Suite de test del backend de la pokeapi', () =>{
 
-describe('Suite de pruebas del backend de la pokeapi', ()=> {
-
-    /*// test del jwt (llamada) a /team
-    it('shoud return 401 when no jwt available', (done) =>{
-        // cuando la llamada no cuenta con el jwt
-        chai.request(app)
-            .post('/team')
-            .end((err, res) => {
-                chai.assert(res.statusCode, 401, 'missing token');
-                done();
-            });
-    });*/
-    
-    //test del proceso login sin informacion 
     it('should return 400 when no data is provided', (done) => {
-        // cuando el usuario no envia informacion al login
         chai.request(app)
-            .post('/login')
-            .end((err, res) => {
-                chai.assert(res.statusCode, 400, 'any data was provided');
+            .post("/login")
+            .end((err, resul) =>{
+                chai.assert.equal(resul.statusCode, 400, "no data provided");
                 done();
-            });
-    });
+            })
+    })
 
-    //test del proceso login con informacion valida
-    it('should return 200 when the /login is valid', (done) => {
+    it('should return 200 for valid credentials', (done) => {
         chai.request(app)
-            .post('/login')
-            .send({user: 'elias', password: '0000'})
+            .post("/login")
+            .set('content-type', 'aplication/json')
+            .send({ user: "elias", password: "1234" })
             .end((err, res) => {
-                // expected valid login
-                chai.assert.equal(res.statusCode, 200, 'succesfull login')
+                chai.assert.equal(res.statusCode, 200, 'valid credentials');
                 done();
-            });
-    });
+            })
+    })
 
-    // test completo de llamada y login con jwt y usuario
-    it('should return 200 when the complete login is succesfull (llamada y usuario)', (done) => {
+    it('Should return 200 when the login+jwt is succesfull', (done) => {
         chai.request(app)
             .post('/login')
-            .set('content-type', 'application/json')
-            .send({user: 'elias', password: '0000'})
+            .set('content-type', 'aplication/json')
+            .send({user: "elias", password: "1234"})
             .end((err, res) => {
-                chai.request(app)
-                    .get('/team')
-                    .send('Authorization', `JWT ${res.body.token}`)
+                    chai.request(app)
+                    .get("/team")
+                    .set("Authorizaton", `JWT ${res.body.token}`)
                     .end((err, res) => {
-                        chai.assert.equal(res.statusCode, 200, 'Token valido');
+                        chai.assert.equal(res.statusCode, 200)
                         done();
                     });
             });
