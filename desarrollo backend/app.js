@@ -3,41 +3,26 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+// passport 
+const passport = require('passport');
+require('./tools/auth_Jwt.js')(passport); 
+app.use(passport.initialize());
+
 // convertir el body en objeto json
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-// modulos de autenticacion de la llamada
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-require('./tools/auth_Jwt')(passport); // le passamos los parametros de auth a la variable passport para despues usar de middelware en /team
 
-const userDatabase = require('./dataBase/dataBase.js');
-userDatabase.registerUser({userName: "elias", password: "1234"});
+// crear un usuario de pruebas PARA EL TEST
+const userControllers = require('./controllers/usersDB'); 
+userControllers.registerUser({userName: "elias", password: "1234"});
 
 
-// funcion de logeo de usuario
-app.post("/login", (req, res) => {
-    if (!req.body){
-        return res.status(400).json({message: "Missing data"});
-    } else if (!req.body.user || !req.body.password){
-        return res.status(400).json({message: "Missing data"});
-    }
+const routAuth = require('./routers/auth').router // acciones de autenticacion como el logeo
+app.use('/auth', routAuth)
 
-    userDatabase.checkUserCredentials(req.body.user, req.body.password, (err, result) => {
-        if (err || !result){
-            return res.status(401).json({message: "Invalid credentials"});
-        }
-        const token = jwt.sign({userId: result}, "un secreto");
-        res.status(200),json({token: token});
-    });
-});
-
-
-// funcion de preguntar equipo
-app.get("/team", passport.authenticate('jwt', {session: false}), (req, res, next) => {
-    res.status(200).send("put que le pario")
-});
+const routTeams = require('./routers/teams').router // acciones sobre /team (equipo pokemon);
+app.use('/teams', routTeams);
 
 
 // iniciar el servidor 

@@ -7,7 +7,6 @@ module.exports = passport => {
         secretOrKey: "es un secreto" // TODO deberia crear en un variable de entorno
     }
     passport.use(new JwtStrategy(opts, (decoded, done) => {
-        console.log("Jwt: ", decoded);
         return done(null, decoded);
     }));
 }
