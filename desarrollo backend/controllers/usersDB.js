@@ -10,6 +10,7 @@ function getUserFromUsername (userName){
             return user;
         }
     }
+    return "Unregistered user"
 }
 
 function registerUser(user){

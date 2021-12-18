@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 // crear un usuario de pruebas PARA EL TEST
 const userControllers = require('./controllers/usersDB'); 
 userControllers.registerUser({userName: "elias", password: "1234"});
+userControllers.registerUser({userName: "marcos", password: "1234"});
 
 
 const routAuth = require('./routers/auth').router // acciones de autenticacion como el logeo
@@ -26,8 +27,9 @@ app.use('/teams', routTeams);
 
 
 // iniciar el servidor 
+const colors = require('colors') // paquete para cambiar el estilo y el color de texto del console.log() XD
 app.listen(port, () => {
-    console.log('Server started in port 3000')
+    console.log('Server started in port 3000'.blue.italic.bold)
 })
 
 exports.app = app;
