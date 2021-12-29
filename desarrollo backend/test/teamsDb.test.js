@@ -16,7 +16,7 @@ describe('Suite de test de la base de datos de equipos', function () {
         userControllers.registerUser({userName: "marcos", password: "1234"});
     });
     this.afterEach(function (){userControllers.cleanUp()});
-    this.timeout(4000);
+    this.timeout(15000);
 
     // modificar el equipo completo
     it('Change the team formation', (done) => {

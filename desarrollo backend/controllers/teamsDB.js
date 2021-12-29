@@ -1,5 +1,7 @@
 const userController = require('./usersDB');
 var teamsDatabase = {};
+const axios = require('axios');
+const pokeapi = 'https://pokeapi.co/api/v2/pokemon/'
 
 function getTeam (userName){
     user = userController.getUserFromUsername(userName);
@@ -37,12 +39,23 @@ function deletePokemon (userName, position){
 }
 
 function changePokemonTeam (userName, team){
-    if ( team.length <= 6){
-        user = userController.getUserFromUsername(userName);
-        teamsDatabase[user] = team;
-        return true;
+    if ( team.length > 6){
+        return false
     }
-    return false
+
+    user = userController.getUserFromUsername(userName);
+    let newTeam = [];
+    team.forEach(element => {
+        axios.get(pokeapi + element).then((response) => {
+            if (response == null || response == undefined) {
+                return false
+            }        
+            newTeam.push({pokemon: response.name, type: response.type});
+        }).then(()=> {
+            teamsDatabase[user] = newTeam;
+        });
+    })
+    return true;
 }
 
 function cleanUp () {

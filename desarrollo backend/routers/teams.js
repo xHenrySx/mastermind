@@ -4,6 +4,7 @@ const axios = require('axios')
 
 // modulos de autenticacion de la llamada
 const passport = require('passport');
+const pokeapi = 'https://pokeapi.co/api/v2/pokemon/'
 
 // acciones sobre el team completo
 router.route('/') 
@@ -31,9 +32,7 @@ router.route('/pokemons')
 
     .post(passport.authenticate('jwt', {session: false}), (req, res, next) => {  // agregar nuevo pokemon
 
-        pokeapi = `https://pokeapi.co/api/v2/pokemon/${req.body.pokemon}`
-
-        axios.get(pokeapi).then((response) => {
+        axios.get(pokeapi + req.body.pokemon).then((response) => {
             if(teamController.addPokemon(req.user.userId, response.data)){
                 res.status(200).json({message: 'Pokemon agregado con exito'})
             } else {
