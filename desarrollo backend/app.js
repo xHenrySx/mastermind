@@ -12,18 +12,14 @@ app.use(passport.initialize());
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-
-// crear un usuario de pruebas PARA EL TEST
-const userControllers = require('./controllers/usersDB'); 
-userControllers.registerUser({userName: "elias", password: "1234"});
-userControllers.registerUser({userName: "marcos", password: "1234"});
-
-
 const routAuth = require('./routers/auth').router // acciones de autenticacion como el logeo
 app.use('/auth', routAuth)
 
 const routTeams = require('./routers/teams').router // acciones sobre /team (equipo pokemon);
 app.use('/teams', routTeams);
+
+const routeUsers = require('./routers/users').router // acciones sobre /team (equipo pokemon);
+app.use('/users', routeUsers);
 
 
 // iniciar el servidor 

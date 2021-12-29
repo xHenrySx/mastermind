@@ -1,52 +1,22 @@
-const chai = require('chai')
-const chaihttp = require('chai-http')
-chai.use(chaihttp)
+const chai = require('chai');
+const chaihttp = require('chai-http');
+chai.use(chaihttp);
 
-const app = require('../app.js').app
+const userControllers = require('../controllers/usersDB'); 
+const teamControllers = require('../controllers/teamsDB'); 
 
-describe('Suite de test del backend de la pokeapi', () =>{
+const app = require('../app.js').app;
 
-    // cunado las credenciales estan vacias
-    it('If no data is provided in user credentials', (done) => {
-        chai.request(app)
-            .post("/auth/login")
-            .end((err, resul) =>{
-                chai.assert.equal(resul.statusCode, 400, "no data provided");
-                done();
-            });
+
+describe('Suite de test de la base de datos de equipos', function () {
+        // configuraciones generales del test
+    this.beforeEach(() => {
+        // crear un usuario de pruebas 
+        userControllers.registerUser({userName: "elias", password: "1234"});
+        userControllers.registerUser({userName: "marcos", password: "1234"});
     });
-
-    // validar credenciales del usuario
-    it('Validation of user credentials', (done) => {
-        chai.request(app)
-            .post("/auth/login")
-            .set('content-type', 'application/json')
-            .send({ user: "elias", password: "1234" })
-            .end((err, res) => {
-                chai.assert.equal(res.statusCode, 200, 'valid credentials');
-                done();
-            });
-    });
-
-    // crear un nuevo usuario con nuevo equipo
-    it('Create a new team and a new acount for the user', (done) => {
-        chai.request(app)
-            .post("/auth/login")
-            .set('content-type', 'application/json')
-            .send({ user: "elias", password: "1234" })
-            .end((err, res) => {
-                chai.request(app)
-                    .get("/teams/")
-                    .set('Authorization', `JWT ${res.body.token}`)
-                    .end((err, res) => {
-                        chai.assert.equal(res.statusCode, 200, 'login succesfull')
-                        chai.assert.equal(res.body.trainer, 'elias')
-                        chai.assert.equal(res.body.team[0], 'bulbasur')
-                        chai.assert.equal(res.body.team[1], 'pikachu')
-                        done();
-                    });
-            });
-    });
+    this.afterEach(function (){userControllers.cleanUp()});
+    this.timeout(4000);
 
     // modificar el equipo completo
     it('Change the team formation', (done) => {
@@ -86,7 +56,7 @@ describe('Suite de test del backend de la pokeapi', () =>{
             .end((err, res) => {
                 let token = res.body.token;
                 chai.request(app)
-                    .put("/teams/pokemons")
+                    .post("/teams/pokemons")
                     .set('Authorization', `JWT ${token}`)
                     .send({pokemon: 'charizard'})
                     .end((err, res) => {
@@ -96,10 +66,10 @@ describe('Suite de test del backend de la pokeapi', () =>{
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200, 'login succesfull');
-                                chai.assert.equal(res.body.trainer, 'elias');
+                                chai.assert.equal(res.body.trainer, 'marcos');
                                 chai.assert.equal(res.body.team[0], 'bulbasur');
                                 chai.assert.equal(res.body.team[1], 'pikachu');
-                                chai.assert.equal(res.body.team[2], 'charizard');
+                                chai.assert.equal(res.body.team[2].name, 'charizard');
                                 done();
                             });
                     });
@@ -118,19 +88,21 @@ describe('Suite de test del backend de la pokeapi', () =>{
                     .delete("/teams/pokemons")
                     .set('Authorization', `JWT ${token}`)
                     .send({pokemonPosition: 1})
+                    .end((err, res) => {
                         chai.assert.equal(res.statusCode, 200);
                         chai.request(app)
                             .get("/teams/")
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
-                                chai.assert.equal(res.body.trainer, 'elias');
+                                chai.assert.equal(res.body.trainer, 'marcos');
                                 chai.assert.equal(res.body.team[0], 'bulbasur');
-                                chai.assert.equal(res.body.team[1], 'charizard');
+                                chai.assert.equal(res.body.team[1], undefined);
                                 done();
-                                
+                            })
                     });
             });
     });
 });
+
 

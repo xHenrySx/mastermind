@@ -9,6 +9,7 @@
   "author": "elias gill",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
     "colors": "^1.4.0",
     "express": "^4.17.1",

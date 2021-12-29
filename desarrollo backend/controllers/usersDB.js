@@ -2,29 +2,34 @@ const uuid = require('uuid');
 const team = require('./teamsDB')
 const crypto = require('../tools/crypto.js');
 
-const userDatabase= {};
+var usersDatabase= {};
 
 function getUserFromUsername (userName){
-    for (let user in userDatabase){
-        if (userName == userDatabase[user].userName){
+    for (let user in usersDatabase){
+        if (userName == usersDatabase[user].userName){
             return user;
         }
     }
-    return "Unregistered user"
+    return false
 }
 
+// crear un usuario con un equipo por defecto
 function registerUser(user){
-    let hashedPwd = crypto.hashPasswordSync(user.password);
-    id = uuid.v4()
-    userDatabase[id] = {
-        userName: user.userName,
-        password: hashedPwd
+    if (! getUserFromUsername(user.userName)){
+        let hashedPwd = crypto.hashPasswordSync(user.password);
+        id = uuid.v4()
+        usersDatabase[id] = {
+            userName: user.userName,
+            password: hashedPwd
+        }
+        team.createTeam(id);
+        return true
     }
-    team.createTeam(id);
+    return false
 };
 
 function checkUserCredentials(userName, password, done){
-    let user = userDatabase[getUserFromUsername(userName)];
+    let user = usersDatabase[getUserFromUsername(userName)];
     if(user){
         crypto.comparePassword(password, user.password, done); // (submitedPassword, hashedPasswordFromDB, done);
     } else {
@@ -33,16 +38,24 @@ function checkUserCredentials(userName, password, done){
 }
 
 function deleteUser(userName, password, done){
-    if (checkUserCredentials(userName, password)){
-    let user = userDatabase[getUserFromUsername(userName)];
-        userDatabase.delete(user);
+    id = checkUserCredentials(userName, password)
+    if (id){
+        let user = usersDatabase[id];
+        usersDatabase.delete(user);
+        team.deleteTeam(user);
         done("succesfull");
     } else {
-        done("Cannot find user or access denied")
+        done("Cannot find user or access denied");
     }
+}
+
+function cleanUp(){
+    usersDatabase = {};
+    team.cleanUp();
 }
 
 exports.checkUserCredentials = checkUserCredentials;
 exports.registerUser = registerUser;
 exports.deleteUSer = deleteUser;
+exports.cleanUp = cleanUp;
 exports.getUserFromUsername = getUserFromUsername;

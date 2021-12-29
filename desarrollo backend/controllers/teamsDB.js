@@ -1,5 +1,5 @@
 const userController = require('./usersDB');
-const teamsDatabase = {};
+var teamsDatabase = {};
 
 function getTeam (userName){
     user = userController.getUserFromUsername(userName);
@@ -13,15 +13,17 @@ function createTeam (id){  // crear un equipo de usuario por defecto
     teamsDatabase[id] = ['bulbasur', 'pikachu'];
 }
 
+function deleteTeam (id){
+    teamsDatabase[id] = {}
+}
+
 function addPokemon (userName, pokemon){
     userId = userController.getUserFromUsername(userName);
-    team = teamsDatabase[userId];
-    if (team.length < 6){
-        team.push(pokemon)
-        return true;
-    } else {
-        return false;
+    if (teamsDatabase[userId].length < 6){
+        teamsDatabase[userId].push({name: pokemon.name, type: pokemon.type})
+        return true
     }
+    return false
 }
 
 function deletePokemon (userName, position){
@@ -30,21 +32,27 @@ function deletePokemon (userName, position){
     if (team.length > 0){
         team.splice(position, 1);
         return true;
-    } else {
-        return false;
-    };
+    }
+    return false;
 }
 
 function changePokemonTeam (userName, team){
-    if (team.length <= 6){
+    if ( team.length <= 6){
         user = userController.getUserFromUsername(userName);
         teamsDatabase[user] = team;
         return true;
     }
+    return false
+}
+
+function cleanUp () {
+    teamsDB = {}
 }
 
 exports.createTeam = createTeam; 
 exports.deletePokemon = deletePokemon; 
 exports.addPokemon = addPokemon; 
 exports.getTeam = getTeam; 
+exports.deleteTeam = deleteTeam; 
+exports.cleanUp = cleanUp; 
 exports.changePokemonTeam = changePokemonTeam; 
