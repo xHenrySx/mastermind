@@ -1,9 +1,5 @@
 const router = require('express').Router();
-const userController = require('../controllers/usersDB');
-//const axios = require('axios')
-
-// modulos de autenticacion de la llamada
-//const passport = require('passport');
+const userController = require('../users/users.controller');
 
 // acciones de creacion de usuarios
 router.route('/') 

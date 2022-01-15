@@ -5,7 +5,7 @@ chai.use(chaihttp)
 const app = require('../app.js').app
 
 
-const userControllers = require('../controllers/usersDB');
+const userControllers = require('../users/users.controller');
 
 describe('Suite de test de la base de datos de usuario', function () {
     this.beforeAll(() => {
@@ -26,16 +26,27 @@ describe('Suite de test de la base de datos de usuario', function () {
     });
 
     // validar credenciales del usuario
-    it('Validation of user credentials', (done) => {
+    it('Valid user credentials', (done) => {
         chai.request(app)
             .post("/auth/login")
             .set('content-type', 'application/json')
             .send({ user: "elias", password: "1234" })
             .end((err, res) => {
-                chai.assert.equal(res.statusCode, 200, 'valid credentials');
+                chai.assert.equal(res.statusCode, 200, 'Login succesfull');
                 done();
             });
     });
+
+    it('Invalid user credentials', (done) => { 
+        chai.request(app)
+            .post('/auth/login')
+            .set('content-type', 'application/json')
+            .send({user: 'elias', password: '9807'})
+            .end((err, res) =>{
+                chai.assert.equal(res.statusCode, 401, 'Invalid credential')
+                done();
+            })
+    })
 
     // crear un nuevo usuario con nuevo equipo
     it('Create a new team and a new acount for the user', (done) => {

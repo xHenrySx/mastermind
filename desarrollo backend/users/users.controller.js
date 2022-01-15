@@ -1,12 +1,12 @@
 const uuid = require('uuid');
-const team = require('./teamsDB')
+const team = require('../teams/teams.controller')
 const crypto = require('../tools/crypto.js');
 
 var usersDatabase= {};
 
 function getUserFromUsername (userName){
     for (let user in usersDatabase){
-        if (userName == usersDatabase[user].userName){
+        if (userName === usersDatabase[user].userName){
             return user;
         }
     }
@@ -33,7 +33,7 @@ function checkUserCredentials(userName, password, done){
     if(user){
         crypto.comparePassword(password, user.password, done); // (submitedPassword, hashedPasswordFromDB, done);
     } else {
-        done("Missing user");
+        done();
     }
 }
 

@@ -3,22 +3,17 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-// passport 
-const passport = require('passport');
-require('./tools/auth_Jwt.js')(passport); 
-app.use(passport.initialize());
+const middlewares = require('./middlewares')
+middlewares.setupMiddlewares(app)
 
-// convertir el body en objeto json
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-
-const routAuth = require('./routers/auth').router // acciones de autenticacion como el logeo
+// routers
+const routAuth = require('./authentication/auth').router // acciones de autenticacion como el logeo
 app.use('/auth', routAuth)
 
-const routTeams = require('./routers/teams').router // acciones sobre /team (equipo pokemon);
+const routTeams = require('./teams/teams.router').router // acciones sobre /team (equipo pokemon);
 app.use('/teams', routTeams);
 
-const routeUsers = require('./routers/users').router // acciones sobre /team (equipo pokemon);
+const routeUsers = require('./users/users.router').router // acciones sobre /team (equipo pokemon);
 app.use('/users', routeUsers);
 
 

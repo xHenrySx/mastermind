@@ -1,0 +1,15 @@
+{
+  "configurations": {
+    "test": {
+      "adapter": "vscode-node",
+      "configuration": {
+        "request": "launch",
+        "protocol": "auto",
+        "stopOnEntry": true,
+        "console": "integratedTerminal",
+        "program": "${workspaceRoot}/test/teamsDb.test.js",
+        "cwd": "${workspaceRoot}"
+      }
+    }
+  }
+}
