@@ -52,11 +52,33 @@ describe('Suite de test de la base de datos de usuario', function () {
     it('Create a new team and a new acount for the user', (done) => {
         chai.request(app)
             .post("/users/")
-            .send({ user: "marcos", password: "1234" })
+            .send({userName: "nuevo", password: "1234" })
             .end((err, res) => {
                 chai.assert.equal(res.statusCode, 200)
                 done();
             });
     });
+
+    // consultar el equipo del usuario
+    it('should return the users team', (done) => {
+        chai.request(app)
+            .post("/auth/login")
+            .set('content-type', 'application/json')
+            .send({ user: "elias", password: "1234" })
+            .end((err, res) => {
+                let token = res.body.token;
+                chai.request(app)
+                    .get("/teams/")
+                    .set('Authorization', `JWT ${token}`)
+                    .end((err, res) => {
+                        chai.assert.equal(res.statusCode, 200, 'login succesfull');
+                        chai.assert.equal(res.body.trainer, 'elias');
+                        chai.assert.equal(res.body.team[0], 'bulbasur');
+                        chai.assert.equal(res.body.team[1], 'pikachu');
+                        done();
+                    })
+            })
+    })
+
 });
 

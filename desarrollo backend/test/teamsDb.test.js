@@ -21,6 +21,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     this.afterEach(function (){userControllers.cleanUp()});
     this.timeout(9000);
 
+
     // agregar un nuevo pokemon
     it('Add new pokemon', (done) => {
         chai.request(app)
@@ -52,14 +53,11 @@ describe('Suite de test de la base de datos de equipos', function () {
 
     // when the team is full
     it('should return 400 when the team is full', (done) => { 
+        
+        let us = userControllers.getUserFromUsername("marcos");
 
         [{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'}].forEach(element => {
-            teamsDB.teamsDatabase.push()
-            NodeIteratorsinglwe
-
-            NodeIteratorlap
-            678
-
+            teamsDB.teamsDatabase[us].push(element);
         })
 
         chai.request(app)

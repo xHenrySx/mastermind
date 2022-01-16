@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 
 function setupMiddlewares (app) {
     app.use(bodyParser.json());
-    auth.init();
+    auth.init(app);
     app.use(auth.protectWithJwt);
 }
 
