@@ -1,7 +1,8 @@
 const userController = require('../users/users.controller');
-var teamsDatabase = {};
 const axios = require('axios');
 const pokeapi = 'https://pokeapi.co/api/v2/pokemon/';
+
+var teamsDatabase = {};
 
 function getTeam (userName){
     user = userController.getUserFromUsername(userName);
