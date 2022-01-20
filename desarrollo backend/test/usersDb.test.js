@@ -18,7 +18,7 @@ describe('Suite de test de la base de datos de usuario', function () {
     // cunado las credenciales estan vacias
     it('If no data is provided in user credentials', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .end((err, resul) =>{
                 chai.assert.equal(resul.statusCode, 400, "no data provided");
                 done();
@@ -28,7 +28,7 @@ describe('Suite de test de la base de datos de usuario', function () {
     // validar credenciales del usuario
     it('Valid user credentials', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "elias", password: "1234" })
             .end((err, res) => {
@@ -39,7 +39,7 @@ describe('Suite de test de la base de datos de usuario', function () {
 
     it('Invalid user credentials', (done) => { 
         chai.request(app)
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({user: 'elias', password: '9807'})
             .end((err, res) =>{
@@ -62,7 +62,7 @@ describe('Suite de test de la base de datos de usuario', function () {
     // consultar el equipo del usuario
     it('should return the users team', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "elias", password: "1234" })
             .end((err, res) => {

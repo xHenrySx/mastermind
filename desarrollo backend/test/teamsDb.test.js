@@ -25,7 +25,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     // agregar un nuevo pokemon
     it('Add new pokemon', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => {
@@ -61,7 +61,7 @@ describe('Suite de test de la base de datos de equipos', function () {
         })
 
         chai.request(app)
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => { 
@@ -79,7 +79,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     // elminar un pokemon del equipo
     it('Delete pokemon in the position', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => {
@@ -108,7 +108,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     // -- Errors -- 
     it('Should return 400 when the pokemon does not exist', (done) => {
         chai.request(app) 
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({user: 'elias', password: '1234'})
             .end((err, res) => {
@@ -125,7 +125,7 @@ describe('Suite de test de la base de datos de equipos', function () {
 
     it('should return 400 when the pokemon index is invalid', (done) => {
         chai.request(app)
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({user: 'elias', password: '1234'})
             .end((err, res) => {

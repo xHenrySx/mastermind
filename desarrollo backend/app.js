@@ -6,9 +6,6 @@ const port = 3000;
 const middlewares = require('./middlewares')
 middlewares.setupMiddlewares(app)
 
-// routers
-const routAuth = require('./authentication/auth').router // acciones de autenticacion como el logeo
-app.use('/auth', routAuth)
 
 const routTeams = require('./teams/teams.router').router // acciones sobre /team (equipo pokemon);
 app.use('/teams', routTeams);
