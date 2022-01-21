@@ -1,18 +1,32 @@
 const uuid = require('uuid');
 const team = require('../teams/teams.controller')
 const crypto = require('../tools/crypto.js');
+const { to } = require('../tools/to');
 
-var usersDatabase= {};
+const mongoose = require('mongoose');
+const UserModel = mongoose.model('UserModel', {userName: String, userId: String, password: String})
 
-function getUserFromUsername (userName){
-    for (let user in usersDatabase){
-        if (userName === usersDatabase[user].userName){
-            return user;
-        }
-    }
-    return false
+async function getUserFromUsername (userName){
+    return new Promise ((resolve, reject) => {
+        let [err, result] = await to( UserModel.findOne({ userName: userName }) );
+        if (err) {
+            return reject(err);
+        } 
+        return resolve(result);
+    });
 }
 
+async function getUser (userId) {
+    return new Promise((resolve, reject) => {
+        let [err, result] = await to(UserModel.findOne({ userId: userId }));
+        if (err) {
+            return reject(err);
+        } 
+        return resolve(result);
+    });
+}
+
+//----------------------------------------------------------
 // crear un usuario con un equipo por defecto
 function registerUser(user){
     if (! getUserFromUsername(user.userName)){
@@ -49,7 +63,7 @@ function deleteUser(userName, password, done){
     }
 }
 
-function cleanUp(){
+function cleanUpUsers(){
     usersDatabase = {};
     team.cleanUp();
 }
