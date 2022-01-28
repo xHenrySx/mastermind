@@ -1,28 +1,37 @@
 const jwt = require('jsonwebtoken');
 const userController = require('./users.controller');
 
-function createUser (req, res) {
-    if (userController.registerUser(req.body)){
-        return res.status(200).json({message: 'user succesfully created'});
-    };
-    res.status(400).josn({message: 'username already exists'});
+async function registerUser (req, res) {
+    // validamos que los que esten todos los datos necesarios
+    if (!req.body.userName || !req.body.password){
+        return res.status(400).json({message: 'Missing data'})
+    }
+
+    // registramos el usuario
+    let response = await userController.registerUser(req.body.userName, req.user.password);
+        if (response){
+            return res.status(200).json({message: 'user succesfully created'});
+        }
+        res.status(400).json({message: 'User already exists'});
 } 
 
-function login (req, res) {
+async function login (req, res) {
+    // comprobamos que los datos esten completos
     if (!req.body){
         return res.status(400).json({message: "Missing data"});
     } else if (!req.body.user || !req.body.password){
         return res.status(400).json({message: "Missing data"});
     }
 
-    userController.checkUserCredentials(req.body.user, req.body.password, (err, result) => {
-        if (result){
-            const token = jwt.sign({userId: req.body.user}, "es un secreto");
-            return res.status(200).json({token: token});
+    // comprobamos credenciales del usuario
+    userController.checkUserCredentials(req.body.user, req.body.password).then((err, result) => {
+        if (err || !result){
+            return res.status(401).json({message: "Invalid credentials"});
         }
-        res.status(401).json({message: "Invalid credentials"});
+        const token = jwt.sign({userId: result.userId}, "es un secreto");
+        res.status(200).json({token: token});
     });
 }
 
-exports.createUser = createUser; 
+exports.registerUser = registerUser; 
 exports.login = login; 

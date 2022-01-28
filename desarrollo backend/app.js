@@ -2,10 +2,10 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+require('./DataBase/DataBase')
 
 const middlewares = require('./middlewares')
 middlewares.setupMiddlewares(app)
-
 
 const routTeams = require('./teams/teams.router').router // acciones sobre /team (equipo pokemon);
 app.use('/teams', routTeams);

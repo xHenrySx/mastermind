@@ -20,8 +20,8 @@ function addPokemon(req, res) {
     });
 }
 
-function deletePokemon (req, res) {
-    let response = teamController.deletePokemon(req.user.userId, req.body.pokemonPosition);
+async function deletePokemon (req, res) {
+    let response = await teamController.deletePokemon(req.user.userId, req.body.pokemonPosition);
     if (response) {
         res.status(200).json('Succesfully');
     } else {

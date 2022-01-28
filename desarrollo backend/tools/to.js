@@ -1,6 +1,5 @@
 function to (promise) {
-    return promise
-        .then (data => {
+    return promise.then (data => {
             return [null, data];
         })
         .catch (err => {

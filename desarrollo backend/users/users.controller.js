@@ -4,11 +4,16 @@ const crypto = require('../tools/crypto.js');
 const { to } = require('../tools/to');
 
 const mongoose = require('mongoose');
-const UserModel = mongoose.model('UserModel', {userName: String, userId: String, password: String})
+const UserModel = mongoose.model('UserModel', 
+    {
+        userName: String, 
+        userId: String, 
+        password: String
+    });
 
-async function getUserFromUsername (userName){
-    return new Promise ((resolve, reject) => {
-        let [err, result] = await to( UserModel.findOne({ userName: userName }) );
+function getUserFromUsername (userName){
+    return new Promise (async(resolve, reject) => {
+        let [err, result] = await to( UserModel.findOne({ userName: userName }).exec() );
         if (err) {
             return reject(err);
         } 
@@ -16,9 +21,9 @@ async function getUserFromUsername (userName){
     });
 }
 
-async function getUser (userId) {
-    return new Promise((resolve, reject) => {
-        let [err, result] = await to(UserModel.findOne({ userId: userId }));
+function getUser (userId) {
+    return new Promise(async(resolve, reject) => {
+        let [err, result] = await to(UserModel.findOne({ userId: userId }).exec());
         if (err) {
             return reject(err);
         } 
@@ -26,46 +31,50 @@ async function getUser (userId) {
     });
 }
 
-//----------------------------------------------------------
-// crear un usuario con un equipo por defecto
-function registerUser(user){
-    if (! getUserFromUsername(user.userName)){
-        let hashedPwd = crypto.hashPasswordSync(user.password);
+// registrar usuario y asignar equipo por defecto 
+async function registerUser(userName, password){
+    return new Promise(async (resolve, reject) => {
+        let hashedPwd = crypto.hashPasswordSync(password);
         id = uuid.v4()
-        usersDatabase[id] = {
-            userName: user.userName,
+        // Guardar en la base de datos nuestro usuario
+        let newUser = new UserModel ({
+            userId: userId,
+            userName: userName,
             password: hashedPwd
-        }
-        team.createTeam(id);
-        return true
-    }
-    return false
+        });
+        await newUser.save().exec();
+        await team.teamTemplate(userId);
+        resolve();
+    });
 };
 
-function checkUserCredentials(userName, password, done){
-    let user = usersDatabase[getUserFromUsername(userName)];
-    if(user){
-        crypto.comparePassword(password, user.password, done); // (submitedPassword, hashedPasswordFromDB, done);
+async function checkUserCredentials(userName, password){
+    let [err, user] = await to(getUserFromUsername(userName));
+    if(!err){
+        crypto.comparePassword(password, user.password); // (submitedPassword, hashedPasswordFromDB, done);
+        return [null, user];
+        // done returns the new user again, like a middleware
     } else {
-        done();
+        return [err, null];
     }
 }
 
-function deleteUser(userName, password, done){
-    id = checkUserCredentials(userName, password)
-    if (id){
-        let user = usersDatabase[id];
-        usersDatabase.delete(user);
-        team.deleteTeam(user);
-        done("succesfull");
-    } else {
-        done("Cannot find user or access denied");
-    }
+async function deleteUser(userName){
+    let [err, user] = await to(getUserFromUsername(userName));
+    let userId = user.userId;
+    return new Promise(async(resolve, reject) => {
+        if (err || !user){
+            return reject(err);
+        }
+        await to(UserModel.deleteOne({userId: userId}));
+        await to(team.deleteTeam(userId));
+        resolve("Succesfull");
+    });
 }
 
-function cleanUpUsers(){
-    usersDatabase = {};
-    team.cleanUp();
+async function cleanUp(){
+    await UserModel.deleteMany({})
+    await team.cleanUp();
 }
 
 exports.checkUserCredentials = checkUserCredentials;
@@ -73,3 +82,4 @@ exports.registerUser = registerUser;
 exports.deleteUSer = deleteUser;
 exports.cleanUp = cleanUp;
 exports.getUserFromUsername = getUserFromUsername;
+exports.getUser = getUser;
