@@ -6,19 +6,18 @@ const userControllers = require('../users/users.controller');
 const teamsDB = require('../teams/teams.controller'); 
 
 const app = require('../app.js').app;
-const passport = require('passport');
 
 
 describe('Suite de test de la base de datos de equipos', function () {
     
     // configuraciones generales del test
-    this.beforeEach(() => {
+    this.beforeEach(async () => {
         // crear un usuario de pruebas 
-        userControllers.registerUser({userName: "elias", password: "1234"});
-        userControllers.registerUser({userName: "marcos", password: "1234"});
+        await userControllers.registerUser("elias", "1234");
+        await userControllers.registerUser("marcos", "1234");
     });
 
-    this.afterEach(function (){userControllers.cleanUp()});
+    this.afterEach(async () => {userControllers.cleanUp()});
     this.timeout(9000);
 
 
@@ -54,11 +53,11 @@ describe('Suite de test de la base de datos de equipos', function () {
     // when the team is full
     it('should return 400 when the team is full', (done) => { 
         
-        let us = userControllers.getUserFromUsername("marcos");
+        //let us = userControllers.getUserFromUsername("marcos");
 
-        [{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'}].forEach(element => {
-            teamsDB.teamsDatabase[us].push(element);
-        })
+        //[{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'}].forEach(element => {
+            //teamsDB.teamsDatabase[us].push(element);
+        //}) TODO
 
         chai.request(app)
             .get('/users/')

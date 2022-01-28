@@ -6,7 +6,6 @@ const port = 3000;
 const middlewares = require('./middlewares')
 middlewares.setupMiddlewares(app)
 
-
 const routTeams = require('./teams/teams.router').router // acciones sobre /team (equipo pokemon);
 app.use('/teams', routTeams);
 
