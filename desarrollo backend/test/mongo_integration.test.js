@@ -7,6 +7,7 @@ const userControllers = require('../users/users.controller');
 const teamsControllers = require('../teams/teams.controller');
 
 describe('Suite de integracion con mongo', function () {
+<<<<<<< HEAD
     // registrar usuario
     it('should return 200 when the register was succesfull', (done) => {
         chai.request(app)
@@ -20,6 +21,19 @@ describe('Suite de integracion con mongo', function () {
 
 
     // login del usurio
+=======
+    // configuraciones generales del test
+    this.beforeEach(async () => {
+        // crear un usuario de pruebas 
+        const user = await userControllers.registerUser("elias", "1234");
+        await userControllers.registerUser("marcos", "1234");
+        return 
+    });
+
+    this.afterEach(async () => {await userControllers.cleanUp()});
+    this.timeout(9000);
+
+>>>>>>> 392c301d7cf1955a5d5151839bdf18269bb81178
     it('should return 200 when login succesfull', function (done) {
         chai.request(app)
             .get('/users/')

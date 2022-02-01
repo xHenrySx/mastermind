@@ -32,17 +32,29 @@ function getUser (userId) {
 }
 
 // registrar usuario y asignar equipo por defecto 
+<<<<<<< HEAD
 async function registerUser(userName, password){
+=======
+function registerUser(userName, password){
+>>>>>>> 392c301d7cf1955a5d5151839bdf18269bb81178
     return new Promise(async (resolve, reject) => {
         let hashedPwd = crypto.hashPasswordSync(password);
         id = uuid.v4()
         // Guardar en la base de datos nuestro usuario
         let newUser = new UserModel ({
+<<<<<<< HEAD
             userId: userId,
             userName: userName,
             password: hashedPwd
         });
         await newUser.save().exec();
+=======
+            userName: userName,
+            userId: userId,
+            password: hashedPwd
+        });
+        await newUser.save();
+>>>>>>> 392c301d7cf1955a5d5151839bdf18269bb81178
         await team.teamTemplate(userId);
         resolve();
     });
@@ -72,6 +84,10 @@ async function deleteUser(userName){
     });
 }
 
+<<<<<<< HEAD
+=======
+//----------------------------------------------------------
+>>>>>>> 392c301d7cf1955a5d5151839bdf18269bb81178
 async function cleanUp(){
     await UserModel.deleteMany({})
     await team.cleanUp();

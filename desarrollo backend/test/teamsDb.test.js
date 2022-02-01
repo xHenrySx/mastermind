@@ -10,6 +10,17 @@ const app = require('../app.js').app;
 
 describe('Suite de test de la base de datos de equipos', function () {
     
+<<<<<<< HEAD
+=======
+    // configuraciones generales del test
+    this.beforeEach(async () => {
+        // crear un usuario de pruebas 
+        await userControllers.registerUser("elias", "1234");
+        await userControllers.registerUser("marcos", "1234");
+    });
+
+    this.afterEach(async () => {userControllers.cleanUp()});
+>>>>>>> 392c301d7cf1955a5d5151839bdf18269bb81178
     this.timeout(9000);
     // configuraciones generales del test
     this.beforeAll(async () => {
