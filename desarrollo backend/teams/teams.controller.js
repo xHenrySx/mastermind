@@ -4,16 +4,16 @@ const pokeapi = 'https://pokeapi.co/api/v2/pokemon/';
 const { to } = require('../tools/to')
 
 const mongoose = require('mongoose');
-const TeamModel = mongoose.model('teamModel', {
+const teamModel = mongoose.model('teamModel', {
     userId: String,
-    team: []
+    team: Array
 });
 
 
 function teamTemplate (id){  // crear un equipo de usuario por defecto
     return new Promise(async (resolve, reject) => {
-        let newTeam = new TeamModel({userId: id, team: ['bulbasaur', 'pikachu']})
-        await newTeam.save()
+        let newTeam = new teamModel({userId: id, team: ['bulbasaur', 'pikachu']})
+        //await newTeam.save();
         resolve();
     })
 }
