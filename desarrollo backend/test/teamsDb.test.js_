@@ -6,26 +6,22 @@ const userControllers = require('../users/users.controller');
 const teamsDB = require('../teams/teams.controller'); 
 
 const app = require('../app.js').app;
-const passport = require('passport');
 
 
 describe('Suite de test de la base de datos de equipos', function () {
-    
-    // configuraciones generales del test
-    this.beforeEach(() => {
-        // crear un usuario de pruebas 
-        userControllers.registerUser({userName: "elias", password: "1234"});
-        userControllers.registerUser({userName: "marcos", password: "1234"});
-    });
-
-    this.afterEach(function (){userControllers.cleanUp()});
     this.timeout(9000);
+    // configuraciones generales del test
+    this.beforeAll(async () => {
+        // crear un usuario de pruebas 
+        await userControllers.registerUser("elias", "1234");
+        await userControllers.registerUser("marcos", "1234");
+    });
 
 
     // agregar un nuevo pokemon
     it('Add new pokemon', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => {
@@ -54,14 +50,14 @@ describe('Suite de test de la base de datos de equipos', function () {
     // when the team is full
     it('should return 400 when the team is full', (done) => { 
         
-        let us = userControllers.getUserFromUsername("marcos");
+        //let us = userControllers.getUserFromUsername("marcos");
 
-        [{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'}].forEach(element => {
-            teamsDB.teamsDatabase[us].push(element);
-        })
+        //[{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'},{name: 'charmander', type: 'elios'}].forEach(element => {
+            //teamsDB.teamsDatabase[us].push(element);
+        //}) TODO
 
         chai.request(app)
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => { 
@@ -79,7 +75,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     // elminar un pokemon del equipo
     it('Delete pokemon in the position', (done) => {
         chai.request(app)
-            .post("/auth/login")
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({ user: "marcos", password: "1234" })
             .end((err, res) => {
@@ -108,7 +104,7 @@ describe('Suite de test de la base de datos de equipos', function () {
     // -- Errors -- 
     it('Should return 400 when the pokemon does not exist', (done) => {
         chai.request(app) 
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({user: 'elias', password: '1234'})
             .end((err, res) => {
@@ -125,7 +121,7 @@ describe('Suite de test de la base de datos de equipos', function () {
 
     it('should return 400 when the pokemon index is invalid', (done) => {
         chai.request(app)
-            .post('/auth/login')
+            .get('/users/')
             .set('content-type', 'application/json')
             .send({user: 'elias', password: '1234'})
             .end((err, res) => {

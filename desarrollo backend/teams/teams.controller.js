@@ -1,8 +1,22 @@
 const userController = require('../users/users.controller');
 const axios = require('axios');
 const pokeapi = 'https://pokeapi.co/api/v2/pokemon/';
+const { to } = require('../tools/to')
 
-var teamsDatabase = {};
+const mongoose = require('mongoose');
+const teamModel = mongoose.model('teamModel', {
+    userId: String,
+    team: Array
+});
+
+
+function teamTemplate (id){  // crear un equipo de usuario por defecto
+    return new Promise(async (resolve, reject) => {
+        let newTeam = new teamModel({userId: id, team: ['bulbasaur', 'pikachu']})
+        //await newTeam.save();
+        resolve();
+    })
+}
 
 function getTeam (userName){
     user = userController.getUserFromUsername(userName);
@@ -12,42 +26,46 @@ function getTeam (userName){
     return "El usuario no existe";
 }
 
-function createTeam (id){  // crear un equipo de usuario por defecto
-    teamsDatabase[id] = ['bulbasur', 'pikachu'];
-}
-
 function deleteTeam (id){
-    teamsDatabase[id] = {};
+    return new Promise((resolve, reject) => {
+        TeamModel.deleteOne({userId: id});
+        resolve()
+    });
 }
 
 async function addPokemon (userName, pokemon){
-    let userId = userController.getUserFromUsername(userName);
-    let team = teamsDatabase[userId];
+    let [err, user] = await userController.getUserFromUsername(userName);
+    let userId = user.userId;
+    let team = await TeamModel.findOne({userId: userId});
 
     return new Promise(resolve => {
-        if (team.length > 5){
+        if (team.team.length > 5){
             resolve(false);
         }
 
-        getPokemonFromApi(pokemon).then((response)=> {
+        getPokemonFromApi(pokemon).then(async (response)=> {
             if (!response){
                 return resolve(false);
             }
-            team.push({name: response.data.name, type: response.data.type});
+            team.team.push({name: response.data.name, type: response.data.type});
+            await team.save();
             resolve(true);
         });
     });
 }
 
 
-function deletePokemon (userName, position){
-    userId = userController.getUserFromUsername(userName);
-    team = teamsDatabase[userId];
-    if (team.length > 0 && team[position] != undefined){
-        team.splice(position, 1);
-        return true;
-    }
-    return false;
+async function deletePokemon (userName, position){
+    let [err, user] = await userController.getUserFromUsername(userName);
+    team = user.team;
+    return new Promise(async (resolve, reject) => {
+        if (team.length > 0 && team[position] != undefined){
+            team.splice(position, 1);
+            await user.save();
+            return resolve();
+        }
+        reject();
+    });
 }
 
 async function getPokemonFromApi (pokemon){
@@ -63,12 +81,12 @@ async function getPokemonFromApi (pokemon){
 }
 
 // limpiar la base de datos de equipos
-function cleanUp () {
-    teamsDB = {}
+async function cleanUp () {
+    await TeamModel.deleteMany({});
+    return true
 }
 
-exports.teamsDatabase = teamsDatabase; 
-exports.createTeam = createTeam; 
+exports.teamTemplate = teamTemplate; 
 exports.deletePokemon = deletePokemon; 
 exports.addPokemon = addPokemon; 
 exports.getTeam = getTeam; 
