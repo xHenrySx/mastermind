@@ -13,11 +13,12 @@ const teamModel = mongoose.model('teamModel', {
 function teamTemplate (id){  // crear un equipo de usuario por defecto
     return new Promise(async (resolve, reject) => {
         let newTeam = new teamModel({userId: id, team: ['bulbasaur', 'pikachu']})
-        //await newTeam.save();
+        await newTeam.save(); // guardar en la base de datos
         resolve();
     })
 }
 
+// buscar el team del usuario en la base de datos
 function getTeam (userName){
     user = userController.getUserFromUsername(userName);
     if (user != undefined) {
@@ -26,27 +27,32 @@ function getTeam (userName){
     return "El usuario no existe";
 }
 
+// elininar team
 function deleteTeam (id){
     return new Promise((resolve, reject) => {
-        TeamModel.deleteOne({userId: id});
+        teamModel.deleteOne({userId: id});
         resolve()
     });
 }
 
+// anadir nuevo pokemon al team del usuario
 async function addPokemon (userName, pokemon){
-    let [err, user] = await userController.getUserFromUsername(userName);
+    let [err, user] = await userController.getUserFromUsername(userName); // buscar el usuario desde la base de datos
     let userId = user.userId;
-    let team = await TeamModel.findOne({userId: userId});
+    let team = await TeamModel.findOne({userId: userId}); // buscar el team del usuario en la DB
 
+    // insertar el nuevo pokemon dentro del equipo
     return new Promise(resolve => {
+        // si el equipo ya esta lleno retornamos false
         if (team.team.length > 5){
             resolve(false);
         }
-
+        // buscamos el pokemon de la pokeapi 
         getPokemonFromApi(pokemon).then(async (response)=> {
             if (!response){
                 return resolve(false);
             }
+            // agregamos el pokemon con mongose
             team.team.push({name: response.data.name, type: response.data.type});
             await team.save();
             resolve(true);
@@ -55,6 +61,7 @@ async function addPokemon (userName, pokemon){
 }
 
 
+// eliminar pokemon de la base de datos del usuario
 async function deletePokemon (userName, position){
     let [err, user] = await userController.getUserFromUsername(userName);
     team = user.team;
@@ -68,6 +75,7 @@ async function deletePokemon (userName, position){
     });
 }
 
+// traer los datos del pokemon desde la poekapi
 async function getPokemonFromApi (pokemon){
     return new Promise(async (resolve, reject) => {
         axios

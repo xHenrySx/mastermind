@@ -29,6 +29,7 @@ async function registerNewUser(userName, password){
     });
 };
 
+// trae el usuarion de la base de datos
 function getUserFromUsername (userName){
     return new Promise (async(resolve, reject) => {
         let [err, result] = await to( UserModel.findOne({ userName: userName }).exec() );
